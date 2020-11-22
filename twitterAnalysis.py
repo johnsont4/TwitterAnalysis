@@ -11,28 +11,32 @@ def createFollowersList(path, listOfFollowers):
     with open(path) as file:
         markup = file.read()
 
-    for name in tqdm(markup.split()[10:20]):
+    for name in tqdm(markup.split()[10:200]):
         listOfFollowers.append(name[0:-1])
     return listOfFollowers
 
 # Function that finds who a specific person follows
 def getFollowing(username):
+    count = 0
     c = twint.Config()
     c.Username = username
     c.Pandas = True
     #c.Output = "/Users/teaganjohnson/Desktop/TwitterFinalProject/Donald Trump Followers/{}.csv".format(username)
 
-    twint.run.Following(c)
-    listOfFollowing = twint.storage.panda.Follow_df
-
-    #listOfFollowing = listOfFollowing.reindex(index=listOfFollowing.index[::-1])
-    #print(listOfFollowing)
-    #listOfFollowing.to_csv(r'/Users/teaganjohnson/Desktop/TwitterFinalProject/.csv', header=None, index=None, sep=' ', mode='a')
     try:
+        twint.run.Following(c)
+        listOfFollowing = twint.storage.panda.Follow_df
+
+        #listOfFollowing = listOfFollowing.reindex(index=listOfFollowing.index[::-1])
+        #print(listOfFollowing)
+        #listOfFollowing.to_csv(r'/Users/teaganjohnson/Desktop/TwitterFinalProject/.csv', header=None, index=None, sep=' ', mode='a')
+
+        print(username)
         print("Works")
         print()
         return listOfFollowing["following"][username]
     except Exception:
+        print(username)
         print("Doesn't Work")
         print()
         return ""
@@ -43,22 +47,20 @@ def getFollowing(username):
 def getTotalFollowerList(listOfFollowers):
     totalFollowerList = []
     for username in tqdm(listOfFollowers):
-        try:
-            listOfFollowers = getFollowing(username)
-        except Exception:
-            listOfFollowers = ""
-        if listOfFollowers != "":
-            totalFollowerList.append(listOfFollowers)
+        listOfFollowing = getFollowing(username)
+
+        if listOfFollowing != "":
+            for user in listOfFollowing:
+                totalFollowerList.append(user)
     return totalFollowerList
 
 # Variable that stores list of all followers
-listOfTrumpFollowers = createFollowersList("/Users/teaganjohnson/desktop/trumpFollowers", [])
+listOfTrumpFollowers = createFollowersList("/Users/teaganjohnson/desktop/bidenFollowers", [])
 
 # Gets a list of who followers are following (It will have duplicates)
 totalFollowerList1 = getTotalFollowerList(listOfTrumpFollowers)
-for x in totalFollowerList1:
-    x = totalFollowerList1
-#print((totalFollowerList))
+print(totalFollowerList1)
+
 # A dictionary that counts the most popular follows in the totalFollowerList
 counterFollowers = Counter(totalFollowerList1)
 print(counterFollowers.most_common(10))
