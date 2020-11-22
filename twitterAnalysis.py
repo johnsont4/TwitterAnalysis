@@ -11,8 +11,8 @@ def createFollowersList(path, listOfFollowers):
     with open(path) as file:
         markup = file.read()
 
-    for name in tqdm(markup.split()[10:20]):
-        listOfFollowers.append(name[0:-1])
+    for name in tqdm(markup.split()[1:20]):
+        listOfFollowers.append(name)
     return listOfFollowers
 
 # Function that finds who a specific person follows
@@ -61,13 +61,13 @@ def getTotalFollowerList(listOfFollowers):
     return totalFollowerList, works, fails
 
 # Variable that stores list of all followers
-listOfTrumpFollowers = createFollowersList("/Users/teaganjohnson/desktop/bidenFollowers", [])
+listOfTrumpFollowers = createFollowersList("/Users/teaganjohnson/desktop/trumpFollowersYuh.csv", [])
 
 # Gets a list of who followers are following (It will have duplicates)
 totalFollowerList1, works, fails = getTotalFollowerList(listOfTrumpFollowers)
 print("works: ", works)
 print("doesn't work: ", fails)
-print("Proportion of followers that worked: ", works/(fails+works)
+print("Proportion of followers that worked: ", works/(fails+works))
 
 # A dictionary that counts the most popular follows in the totalFollowerList
 counterFollowers = Counter(totalFollowerList1)
