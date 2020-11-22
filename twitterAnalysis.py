@@ -11,13 +11,14 @@ def createFollowersList(path, listOfFollowers):
     with open(path) as file:
         markup = file.read()
 
-    for name in tqdm(markup.split()[10:200]):
+    for name in tqdm(markup.split()[10:20]):
         listOfFollowers.append(name[0:-1])
     return listOfFollowers
 
 # Function that finds who a specific person follows
 def getFollowing(username):
-    count = 0
+    works = 0
+    fails = 0
     c = twint.Config()
     c.Username = username
     c.Pandas = True
@@ -46,20 +47,27 @@ def getFollowing(username):
 # are lists of users that they follow.
 def getTotalFollowerList(listOfFollowers):
     totalFollowerList = []
+    works = 0
+    fails = 0
     for username in tqdm(listOfFollowers):
         listOfFollowing = getFollowing(username)
 
         if listOfFollowing != "":
+            works+=1
             for user in listOfFollowing:
                 totalFollowerList.append(user)
-    return totalFollowerList
+        else:
+            fails+=1
+    return totalFollowerList, works, fails
 
 # Variable that stores list of all followers
 listOfTrumpFollowers = createFollowersList("/Users/teaganjohnson/desktop/bidenFollowers", [])
 
 # Gets a list of who followers are following (It will have duplicates)
-totalFollowerList1 = getTotalFollowerList(listOfTrumpFollowers)
-print(totalFollowerList1)
+totalFollowerList1, works, fails = getTotalFollowerList(listOfTrumpFollowers)
+print("works: ", works)
+print("doesn't work: ", fails)
+print("Proportion of followers that worked: ", works/(fails+works)
 
 # A dictionary that counts the most popular follows in the totalFollowerList
 counterFollowers = Counter(totalFollowerList1)
