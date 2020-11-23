@@ -1,9 +1,13 @@
 import twint
 
-c = twint.Config()
-c.Username = "realDonaldTrump"
-c.Limit = 20
-c.Store_csv = True
-c.Output = "trumpFollowersYuh.csv"
+def getFollowers(username):
+    c = twint.Config()
+    c.Username = username
+    c.Limit = 50000
+    c.Store_csv = True
+    c.Output = "{}Followers.csv".format(username)
 
-twint.run.Followers(c)
+    twint.run.Followers(c)
+
+getFollowers("realDonaldTrump")
+getFollowers("JoeBiden")
