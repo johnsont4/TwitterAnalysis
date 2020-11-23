@@ -6,8 +6,7 @@ import numpy as np
 from collections import defaultdict
 from collections import Counter
 
-# Opens the text file with user's followers and returns all followers in a list
-def createFollowersList(path, listOfFollowers):
+def openFiles(path, listOfFollowers):
     with open(path) as file:
         markup = file.read()
 
@@ -31,22 +30,17 @@ def getFollowing(username):
         #listOfFollowing = listOfFollowing.reindex(index=listOfFollowing.index[::-1])
         #print(listOfFollowing)
         #listOfFollowing.to_csv(r'/Users/teaganjohnson/Desktop/TwitterFinalProject/.csv', header=None, index=None, sep=' ', mode='a')
-
-        print(username)
-        print("Works")
-        print()
         return listOfFollowing["following"][username]
     except Exception:
-        print(username)
-        print("Doesn't Work")
-        print()
         return ""
+
 
 # Function that returns the list of every single follower of a user.
 # It will also include a dictionary where the keys are users and the values
 # are lists of users that they follow.
-def getTotalFollowerList(listOfFollowers):
+def getTotalFollowerStats(listOfFollowers):
     totalFollowerList = []
+    followersDict = defaultdict(list)
     works = 0
     fails = 0
     for username in tqdm(listOfFollowers):
@@ -56,19 +50,30 @@ def getTotalFollowerList(listOfFollowers):
             works+=1
             for user in listOfFollowing:
                 totalFollowerList.append(user)
+            followersDict[username] = listOfFollowing
         else:
             fails+=1
-    return totalFollowerList, works, fails
+    return totalFollowerList, followersDict, works, fails
 
-# Variable that stores list of all followers
-listOfTrumpFollowers = createFollowersList("/Users/teaganjohnson/desktop/trumpFollowersYuh.csv", [])
+trumpFollowers = openFiles("trumpFollowers.csv", [])
+bidenFollowers = openFiles("bidenFollowers.csv", [])
+bothFollowers = openFiles("bothFollowers.csv", [])
+def runStats(followers, name):
+    totalFollowerList, followersDict, works, fails = getTotalFollowerStats(followers)
+    print(name)
+    print()
+    print("Length of list: ", len(totalFollowerList))
+    print("works: ", works)
+    print("doesn't work: ", fails)
+    print("Proportion of followers that worked: ", works/(fails+works))
+    counterFollowers = Counter(totalFollowerList)
+    print("TOP TEN: ", counterFollowers.most_common(10))
+    print()
 
-# Gets a list of who followers are following (It will have duplicates)
-totalFollowerList1, works, fails = getTotalFollowerList(listOfTrumpFollowers)
-print("works: ", works)
-print("doesn't work: ", fails)
-print("Proportion of followers that worked: ", works/(fails+works))
 
+runStats(trumpFollowers, "TRUMP")
+runStats(bidenFollowers, "BIDEN")
+runStats(bothFollowers, "BOTH")
 # A dictionary that counts the most popular follows in the totalFollowerList
-counterFollowers = Counter(totalFollowerList1)
-print(counterFollowers.most_common(10))
+#counterFollowers = Counter(totalFollowerList1)
+#print(counterFollowers.most_common(10))
