@@ -7,7 +7,7 @@ from collections import defaultdict
 from collections import Counter
 import csv
 
-def createFollowersList(path, listOfFollowers):
+def createFollowersList(path, listOfFollowers, previousLists=None):
     with open(path) as file:
         markup = file.read()
 
@@ -18,9 +18,24 @@ def createFollowersList(path, listOfFollowers):
 
 listOfTrumpFollowers = createFollowersList("realDonaldTrumpFollowers.csv", [])
 listOfBidenFollowers = createFollowersList("JoeBidenFollowers.csv", [])
+
+listOfTrumpFollowers = findAllFollowers(listOfTrumpFollowers, listOfBidenFollowers, "JoeBidenFollowers.csv")
+listOfBidenFollowers = findAllFollowers(listOfBidenFollowers, listOfTrumpFollowers, "realDonaldTrumpFollowers.csv")
+
 both = set(listOfTrumpFollowers).intersection(set(listOfBidenFollowers))
 
+
 print("Total length!: ", len(listOfTrumpFollowers)+len(listOfBidenFollowers)-len(both))
+
+print("Trump: ", len(listOfTrumpFollowers))
+print(listOfTrumpFollowers)
+print()
+print("Biden: ", len(listOfBidenFollowers))
+print(listOfBidenFollowers)
+print()
+print(len(both))
+print(both)
+print()
 
 def removeDuplicates(listOfFollowers, both):
     for user in both:

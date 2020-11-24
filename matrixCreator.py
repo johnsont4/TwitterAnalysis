@@ -17,18 +17,18 @@ def makeFollowerVector(person, faction, columnsVector):
 
 
 
-def followerMatrix(faction, path):
+def followerMatrix(faction, columnsVector):
     matrix = []
     array = []
-    with open(path) as mostPopular:
-        for person in mostPopular:
-            if nameOfFile[0] != ".":
-                followerVector = makeFollowerVector(person, faction)
-                matrix.append(followersVector)
-                if faction == 'trump':
-                    array.append('1')
-                elif faction == 'biden':
-                    array.append('0')
+
+    for person in os.listdir("/Users/teaganjohnson/Desktop/TwitterAnalysis/{}".format(faction)):
+        if person[0] != ".":
+            followerVector = makeFollowerVector(person, faction, columnsVector)
+            matrix.append(followerVector)
+            if faction == 'Donald Trump Followers':
+                array.append('1')
+            elif faction == 'Joe Biden Followers':
+                array.append('0')
     matrix = np.array(matrix)
     return matrix, array
 
@@ -48,12 +48,9 @@ bidenTop50 = createTop50List("/Users/teaganjohnson/Desktop/TwitterAnalysis/biden
 
 top100 = trumpTop50 + bidenTop50
 columnsVector = list(dict.fromkeys(top100))
-print(columnsVector)
 
-x = makeFollowerVector('evie29192940.csv', "Donald Trump Followers", columnsVector)
-#print(x)
-#DTMatrix,DTArray = followerMatrix('trump', "/Users/teaganjohnson/Desktop/TwitterAnalysis/Donald Trump Followers")
-#JBMatrix,JBArray = followerMatrix('biden', "/Users/teaganjohnson/Desktop/TwitterAnalysis/Joe Biden Followers")
-#BMatrix, BArray = followerMatrix('BothFollowers')
-#if listType == 'BidenFollowers'
-#    array.append('2')
+trumpMatrix, trumpArray = followerMatrix("Donald Trump Followers", columnsVector)
+bidenMatrix, bidenArray = followerMatrix("Joe Biden Followers", columnsVector)
+bothMatrix, bothArray = followerMatrix("Both Followers", columnsVector)
+
+print(trumpArray)
