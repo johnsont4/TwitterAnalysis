@@ -11,7 +11,7 @@ def createFollowersList(path, listOfFollowers):
     with open(path) as file:
         markup = file.read()
 
-    for name in tqdm(markup.split()[1:50000]):
+    for name in tqdm(markup.split()[1:10]):
         listOfFollowers.append(name)
     return listOfFollowers
 
@@ -20,16 +20,16 @@ listOfTrumpFollowers = createFollowersList("realDonaldTrumpFollowers.csv", [])
 listOfBidenFollowers = createFollowersList("JoeBidenFollowers.csv", [])
 both = set(listOfTrumpFollowers).intersection(set(listOfBidenFollowers))
 
-print("Total length!: ", len(listOfTrumpFollowers+listOfBidenFollowers))
+print("Total length!: ", len(listOfTrumpFollowers)+len(listOfBidenFollowers)-len(both))
 
-def removeDuplicates(listOfFollowers):
+def removeDuplicates(listOfFollowers, both):
     for user in both:
         if user in listOfFollowers:
             listOfFollowers.remove(user)
     return listOfFollowers
 
-uniqueTrump = set(removeDuplicates(listOfTrumpFollowers))
-uniqueBiden = set(removeDuplicates(listOfBidenFollowers))
+uniqueTrump = set(removeDuplicates(listOfTrumpFollowers, both))
+uniqueBiden = set(removeDuplicates(listOfBidenFollowers, both))
 
 print("Trump: ", len(uniqueTrump))
 print("Biden: ", len(uniqueBiden))

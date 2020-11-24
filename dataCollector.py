@@ -7,11 +7,12 @@ from collections import defaultdict
 from collections import Counter
 import csv
 
+
 def openFiles(path, listOfFollowers):
     with open(path) as file:
         markup = file.read()
 
-    for name in tqdm(markup.split()[1:2000]):
+    for name in tqdm(markup.split()[0:3]):
         listOfFollowers.append(name)
     return listOfFollowers
 
@@ -33,6 +34,7 @@ def getFollowing(username):
         #listOfFollowing.to_csv(r'/Users/teaganjohnson/Desktop/TwitterFinalProject/.csv', header=None, index=None, sep=' ', mode='a')
         return listOfFollowing["following"][username]
     except Exception:
+        print("WAIT", username)
         return ""
 
 
@@ -59,6 +61,10 @@ def getTotalFollowerStats(listOfFollowers):
 trumpFollowers = openFiles("trumpFollowers.csv", [])
 bidenFollowers = openFiles("bidenFollowers.csv", [])
 bothFollowers = openFiles("bothFollowers.csv", [])
+
+print('Trump', len(trumpFollowers))
+print('biden', len(bidenFollowers))
+print('both', len(bothFollowers))
 def runStats(followers, name, folder):
     totalFollowerList, followersDict, works, fails = getTotalFollowerStats(followers)
     print(name)
@@ -74,11 +80,15 @@ def runStats(followers, name, folder):
 
     with open("{}Top100.csv".format(name), "w") as followerFile:
         csvwriter = csv.writer(followerFile)
-        csvwriter.writerows(zip(counterFollowers))
+        csvwriter.writerow(["username", "followers"])
+        for thing in counterFollowers.most_common(100):
+            add = [thing[0], thing[1]]
+            csvwriter.writerow(zip(add))
 
     for person in followersDict:
         with open("/Users/teaganjohnson/Desktop/TwitterAnalysis/{}/{}.csv".format(folder, person), "w") as personFile:
             csvwriter = csv.writer(personFile)
+            csvwriter.writerow(["username"])
             csvwriter.writerows(zip(list(followersDict[person])))
 
     print("TOP 100: ", counterFollowers.most_common(100))
