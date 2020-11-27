@@ -7,20 +7,20 @@ from collections import defaultdict
 from collections import Counter
 import csv
 
+currPath = os.getcwd()
+parent = os.path.abspath(os.path.join(currPath, os.pardir))
+
 def createFollowersList(path, listOfFollowers, previousLists=None):
     with open(path) as file:
         markup = file.read()
 
-    for name in tqdm(markup.split()[1:10]):
+    for name in tqdm(markup.split()[1:500]):
         listOfFollowers.append(name)
     return listOfFollowers
 
 
-listOfTrumpFollowers = createFollowersList("realDonaldTrumpFollowers.csv", [])
-listOfBidenFollowers = createFollowersList("JoeBidenFollowers.csv", [])
-
-listOfTrumpFollowers = findAllFollowers(listOfTrumpFollowers, listOfBidenFollowers, "JoeBidenFollowers.csv")
-listOfBidenFollowers = findAllFollowers(listOfBidenFollowers, listOfTrumpFollowers, "realDonaldTrumpFollowers.csv")
+listOfTrumpFollowers = createFollowersList("/{}/realDonaldTrumpFollowers.csv".format(parent), [])
+listOfBidenFollowers = createFollowersList("/{}/JoeBidenFollowers.csv".format(parent), [])
 
 both = set(listOfTrumpFollowers).intersection(set(listOfBidenFollowers))
 
@@ -50,13 +50,13 @@ print("Trump: ", len(uniqueTrump))
 print("Biden: ", len(uniqueBiden))
 print("Both: ", len(both))
 
-def saveToComp(file, faction):
-    with open("{}.csv".format(faction), "w") as followerFile:
+def saveToComp(file, faction, parent):
+    with open("/{}/{}.csv".format(parent, faction), "w") as followerFile:
         csvwriter = csv.writer(followerFile)
 
         csvwriter.writerows(zip(file))
 
 
-saveToComp(uniqueTrump, "TrumpFollowers")
-saveToComp(uniqueBiden, "BidenFollowers")
-saveToComp(both, "BothFollowers")
+saveToComp(uniqueTrump, "TrumpFollowers", parent)
+saveToComp(uniqueBiden, "BidenFollowers", parent)
+saveToComp(both, "BothFollowers", parent)

@@ -7,12 +7,15 @@ from collections import defaultdict
 from collections import Counter
 import csv
 
+currPath = os.getcwd()
+parent = os.path.abspath(os.path.join(currPath, os.pardir))
 
 def openFiles(path, listOfFollowers):
     with open(path) as file:
         markup = file.read()
+        print(markup)
 
-    for name in tqdm(markup.split()[0:3]):
+    for name in tqdm(markup.split()[0:499]):
         listOfFollowers.append(name)
     return listOfFollowers
 
@@ -23,8 +26,7 @@ def getFollowing(username):
     c = twint.Config()
     c.Username = username
     c.Pandas = True
-    #c.Output = "/Users/teaganjohnson/Desktop/TwitterFinalProject/Donald Trump Followers/{}.csv".format(username)
-
+    
     try:
         twint.run.Following(c)
         listOfFollowing = twint.storage.panda.Follow_df
@@ -58,14 +60,14 @@ def getTotalFollowerStats(listOfFollowers):
             fails+=1
     return totalFollowerList, followersDict, works, fails
 
-trumpFollowers = openFiles("trumpFollowers.csv", [])
-bidenFollowers = openFiles("bidenFollowers.csv", [])
-bothFollowers = openFiles("bothFollowers.csv", [])
+trumpFollowers = openFiles("{}/TrumpFollowers.csv".format(parent), [])
+bidenFollowers = openFiles("{}/BidenFollowers.csv".format(parent), [])
+bothFollowers = openFiles("{}/BothFollowers.csv".format(parent), [])
 
 print('Trump', len(trumpFollowers))
 print('biden', len(bidenFollowers))
 print('both', len(bothFollowers))
-def runStats(followers, name, folder):
+def runStats(followers, name, folder, parent):
     totalFollowerList, followersDict, works, fails = getTotalFollowerStats(followers)
     print(name)
     print()
@@ -78,7 +80,7 @@ def runStats(followers, name, folder):
         pass
     counterFollowers = Counter(totalFollowerList)
 
-    with open("{}Top100.csv".format(name), "w") as followerFile:
+    with open("{}/{}Top100.csv".format(parent, name), "w") as followerFile:
         csvwriter = csv.writer(followerFile)
         csvwriter.writerow(["username", "followers"])
         for thing in counterFollowers.most_common(100):
@@ -86,7 +88,7 @@ def runStats(followers, name, folder):
             csvwriter.writerow(zip(add))
 
     for person in followersDict:
-        with open("/Users/teaganjohnson/Desktop/TwitterAnalysis/{}/{}.csv".format(folder, person), "w") as personFile:
+        with open("{}/{}/{}.csv".format(parent, folder, person), "w") as personFile:
             csvwriter = csv.writer(personFile)
             csvwriter.writerow(["username"])
             csvwriter.writerows(zip(list(followersDict[person])))
@@ -95,6 +97,6 @@ def runStats(followers, name, folder):
     print()
 
 
-runStats(trumpFollowers, "trump", "Donald Trump Followers")
-runStats(bidenFollowers, "biden", "Joe Biden Followers")
-runStats(bothFollowers, "both", "Both Followers")
+runStats(trumpFollowers, "trump", "Donald Trump Followers", parent)
+runStats(bidenFollowers, "biden", "Joe Biden Followers", parent)
+runStats(bothFollowers, "both", "Both Followers", parent)
