@@ -7,10 +7,12 @@ parent = os.path.abspath(os.path.join(currPath, os.pardir))
 
 def makeFollowerVector(person, faction, columnsVector, parent):
     followerVector = []
+    count = 0
     with open("{}/{}/{}".format(parent, faction, person)) as user:
         dataframe = pd.read_csv(user, usecols=[0])
         dataframe = dataframe.username.tolist()
         for account in columnsVector:
+            count+=1
             if account[2:-3] in dataframe:
                 followerVector.append(1)
             else:
@@ -29,9 +31,9 @@ def followerMatrix(faction, columnsVector, parent):
             followerVector = makeFollowerVector(person, faction, columnsVector, parent)
             matrix.append(followerVector)
             if faction == 'Donald Trump Followers':
-                array.append('1')
+                array.append(1)
             elif faction == 'Joe Biden Followers':
-                array.append('0')
+                array.append(0)
     matrix = np.array(matrix)
     return matrix, array
 
@@ -50,6 +52,7 @@ trumpTop50 = createTop50List("{}/trumpTop100.csv".format(parent))
 bidenTop50 = createTop50List("{}/bidenTop100.csv".format(parent))
 
 top100 = trumpTop50 + bidenTop50
+# Removes duplicates
 columnsVector = list(dict.fromkeys(top100))
 
 trumpMatrix, trumpArray = followerMatrix("Donald Trump Followers", columnsVector, parent)
@@ -59,12 +62,12 @@ bothMatrix, bothArray = followerMatrix("Both Followers", columnsVector, parent)
 
 matrix_list = np.concatenate((trumpMatrix, bidenMatrix), axis = 0)
 matrix = np.array(matrix_list)
-np.save('/{}/matrix.npy'.format(parent), matrix)
+np.save('matrix.npy', matrix)
 
-np.save('/{}/bothMatrix.npy'.format(parent), bothMatrix)
+np.save('bothMatrix.npy', bothMatrix)
 
 targetArray_list = np.concatenate((trumpArray, bidenArray), axis = 0)
 targetArray = np.array(targetArray_list)
-np.save('/{}/tagetArray.npy'.format(parent), targetArray)
+np.save('tagetArray.npy', targetArray)
 
-np.save('/{}/topTeamsList.npy'.format(parent), top100)
+np.save('topTeamsList.npy', columnsVector)
