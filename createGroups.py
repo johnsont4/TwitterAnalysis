@@ -14,7 +14,7 @@ def createFollowersList(path, listOfFollowers, previousLists=None):
     with open(path) as file:
         markup = file.read()
 
-    for name in tqdm(markup.split()[1:500]):
+    for name in tqdm(markup.split()[1:1000]):
         listOfFollowers.append(name)
     return listOfFollowers
 

@@ -10,12 +10,12 @@ import csv
 currPath = os.getcwd()
 parent = os.path.abspath(os.path.join(currPath, os.pardir))
 
-def openFiles(path, listOfFollowers):
+def openFiles(path):
+    listOfFollowers = []
     with open(path) as file:
         markup = file.read()
-        print(markup)
 
-    for name in tqdm(markup.split()[0:499]):
+    for name in tqdm(markup.split()[1:2000]):
         listOfFollowers.append(name)
     return listOfFollowers
 
@@ -26,7 +26,7 @@ def getFollowing(username):
     c = twint.Config()
     c.Username = username
     c.Pandas = True
-    
+
     try:
         twint.run.Following(c)
         listOfFollowing = twint.storage.panda.Follow_df
@@ -36,39 +36,42 @@ def getFollowing(username):
         #listOfFollowing.to_csv(r'/Users/teaganjohnson/Desktop/TwitterFinalProject/.csv', header=None, index=None, sep=' ', mode='a')
         return listOfFollowing["following"][username]
     except Exception:
-        print("WAIT", username)
         return ""
 
 
 # Function that returns the list of every single follower of a user.
 # It will also include a dictionary where the keys are users and the values
 # are lists of users that they follow.
-def getTotalFollowerStats(listOfFollowers):
+def getTotalFollowerStats(listOfFollowers, name):
     totalFollowerList = []
+    listOfPeopleFollowingBoth = []
     followersDict = defaultdict(list)
+    bothFollowersDict = defaultdict(list)
     works = 0
     fails = 0
     for username in tqdm(listOfFollowers):
         listOfFollowing = getFollowing(username)
-
         if listOfFollowing != "":
             works+=1
-            for user in listOfFollowing:
-                totalFollowerList.append(user)
-            followersDict[username] = listOfFollowing
+            if "realDonaldTrump" and "JoeBiden" not in listOfFollowing:
+                for user in listOfFollowing:
+                    totalFollowerList.append(user)
+                followersDict[username] = listOfFollowing
+            else:
+                print("THIS PERSON FOLLOWS BOTH: ", username)
+                listOfPeopleFollowingBoth.append(username)
+                bothFollowersDict[username] = listOfFollowing
         else:
             fails+=1
-    return totalFollowerList, followersDict, works, fails
+    return totalFollowerList, followersDict, works, fails, bothFollowersDict
 
-trumpFollowers = openFiles("{}/TrumpFollowers.csv".format(parent), [])
-bidenFollowers = openFiles("{}/BidenFollowers.csv".format(parent), [])
-bothFollowers = openFiles("{}/BothFollowers.csv".format(parent), [])
+trumpFollowers = openFiles("{}/realDonaldTrumpFollowers.csv".format(parent))
+bidenFollowers = openFiles("{}/JoeBidenFollowers.csv".format(parent))
 
 print('Trump', len(trumpFollowers))
 print('biden', len(bidenFollowers))
-print('both', len(bothFollowers))
 def runStats(followers, name, folder, parent):
-    totalFollowerList, followersDict, works, fails = getTotalFollowerStats(followers)
+    totalFollowerList, followersDict, works, fails, bothFollowersDict = getTotalFollowerStats(followers, name)
     print(name)
     print()
     print("Length of list: ", len(totalFollowerList))
@@ -95,8 +98,21 @@ def runStats(followers, name, folder, parent):
 
     print("TOP 100: ", counterFollowers.most_common(100))
     print()
+    return bothFollowersDict
 
 
-runStats(trumpFollowers, "trump", "Donald Trump Followers", parent)
-runStats(bidenFollowers, "biden", "Joe Biden Followers", parent)
-runStats(bothFollowers, "both", "Both Followers", parent)
+bothFollowersTrump = runStats(trumpFollowers, "trump", "Donald Trump Followers", parent)
+bothFollowersBiden = runStats(bidenFollowers, "biden", "Joe Biden Followers", parent)
+def mergeDicts(dict1, dict2):
+    both = dict1.copy()
+    both.update(dict2)
+    return both
+bothFollowersDict = mergeDicts(bothFollowersTrump, bothFollowersBiden)
+
+def writeBothFolder(bothFollowers, parent):
+    for person in bothFollowers.keys():
+        with open("{}/Both Followers/{}.csv".format(parent, person), "w") as personFile:
+            csvwriter = csv.writer(personFile)
+            csvwriter.writerow(["username"])
+            csvwriter.writerows(zip(list(bothFollowersDict[person])))
+writeBothFolder(bothFollowersDict, parent)
