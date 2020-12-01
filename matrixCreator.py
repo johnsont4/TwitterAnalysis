@@ -68,6 +68,6 @@ np.save('bothMatrix.npy', bothMatrix)
 
 targetArray_list = np.concatenate((trumpArray, bidenArray), axis = 0)
 targetArray = np.array(targetArray_list)
-np.save('tagetArray.npy', targetArray)
+np.save('targetArray.npy', targetArray)
 
 np.save('topTeamsList.npy', columnsVector)
