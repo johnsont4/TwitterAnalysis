@@ -1,5 +1,6 @@
 import twint
 
+# Function that saves a list of 50,000 users that follow a given account
 def getFollowers(username):
     c = twint.Config()
     c.Username = username

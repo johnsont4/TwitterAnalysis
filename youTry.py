@@ -8,6 +8,7 @@ from collections import Counter
 import csv
 from sklearn.naive_bayes import BernoulliNB
 
+# Returns list of accounts that a specific user follows
 def getFollowing(username):
     works = 0
     fails = 0
@@ -26,7 +27,7 @@ def getFollowing(username):
     except Exception:
         return ""
 
-
+# Creates a vector for a specific user
 def createVector(person, columnsVector):
     followerVector = []
     followTrump = False
@@ -47,6 +48,7 @@ def createVector(person, columnsVector):
 
 topTeamsListMessy = np.load('topTeamsList.npy')
 
+# Creates a list of top column accounts
 def cleanTeamsList(teamsList):
     cleanList = []
     for user in teamsList:

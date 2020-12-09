@@ -7,9 +7,11 @@ from collections import defaultdict
 from collections import Counter
 import csv
 
+# Find the parent function for future reference
 currPath = os.getcwd()
 parent = os.path.abspath(os.path.join(currPath, os.pardir))
 
+# Function that reads a csv and returns a list of users given a path
 def openFiles(path):
     listOfFollowers = []
     with open(path) as file:
@@ -19,7 +21,7 @@ def openFiles(path):
         listOfFollowers.append(name)
     return listOfFollowers
 
-# Function that finds who a specific person follows
+# Function that returns a list of who a user follows given a Twitter username
 def getFollowing(username):
     works = 0
     fails = 0
@@ -65,11 +67,9 @@ def getTotalFollowerStats(listOfFollowers, name):
             fails+=1
     return totalFollowerList, followersDict, works, fails, bothFollowersDict
 
-trumpFollowers = openFiles("{}/realDonaldTrumpFollowers.csv".format(parent))
-bidenFollowers = openFiles("{}/JoeBidenFollowers.csv".format(parent))
-
-print('Trump', len(trumpFollowers))
-print('biden', len(bidenFollowers))
+# Function that writes the top 100ish column accounts to a directiry
+# It also writes each user's following list to a directory
+# Lastly, it returns the dictionary containing information about the users following both
 def runStats(followers, name, folder, parent):
     totalFollowerList, followersDict, works, fails, bothFollowersDict = getTotalFollowerStats(followers, name)
     print(name)
@@ -100,19 +100,24 @@ def runStats(followers, name, folder, parent):
     print()
     return bothFollowersDict
 
-
-bothFollowersTrump = runStats(trumpFollowers, "trump", "Donald Trump Followers", parent)
-bothFollowersBiden = runStats(bidenFollowers, "biden", "Joe Biden Followers", parent)
+# Function that merges to dictionaries based on keys
 def mergeDicts(dict1, dict2):
     both = dict1.copy()
     both.update(dict2)
     return both
-bothFollowersDict = mergeDicts(bothFollowersTrump, bothFollowersBiden)
 
+# Function that writes each user following both's following list given a list of bothFollowers
 def writeBothFolder(bothFollowers, parent):
     for person in bothFollowers.keys():
         with open("{}/Both Followers/{}.csv".format(parent, person), "w") as personFile:
             csvwriter = csv.writer(personFile)
             csvwriter.writerow(["username"])
             csvwriter.writerows(zip(list(bothFollowersDict[person])))
+
+
+trumpFollowers = openFiles("{}/realDonaldTrumpFollowers.csv".format(parent))
+bidenFollowers = openFiles("{}/JoeBidenFollowers.csv".format(parent))
+bothFollowersTrump = runStats(trumpFollowers, "trump", "Donald Trump Followers", parent)
+bothFollowersBiden = runStats(bidenFollowers, "biden", "Joe Biden Followers", parent)
+bothFollowersDict = mergeDicts(bothFollowersTrump, bothFollowersBiden)
 writeBothFolder(bothFollowersDict, parent)

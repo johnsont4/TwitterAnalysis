@@ -5,6 +5,7 @@ import pandas as pd
 currPath = os.getcwd()
 parent = os.path.abspath(os.path.join(currPath, os.pardir))
 
+# Function that returns a vector full of 0s and 1s given a username
 def makeFollowerVector(person, faction, columnsVector, parent):
     followerVector = []
     count = 0
@@ -19,9 +20,7 @@ def makeFollowerVector(person, faction, columnsVector, parent):
                 followerVector.append(0)
     return followerVector
 
-
-
-
+# Function that returns a matrix and target array given Trump or Biden
 def followerMatrix(faction, columnsVector, parent):
     matrix = []
     array = []
@@ -37,6 +36,7 @@ def followerMatrix(faction, columnsVector, parent):
     matrix = np.array(matrix)
     return matrix, array
 
+# Function that returns the top column accounts of either Trump or Biden
 def createTop50List(path):
     top100 = []
     with open(path) as mostPopularFile:
@@ -47,6 +47,10 @@ def createTop50List(path):
         if "('realDonaldTrump',)" in top50:
             top50.remove("('realDonaldTrump',)")
         return top50
+
+
+
+
 
 trumpTop50 = createTop50List("{}/trumpTop100.csv".format(parent))
 bidenTop50 = createTop50List("{}/bidenTop100.csv".format(parent))
@@ -59,7 +63,8 @@ trumpMatrix, trumpArray = followerMatrix("Donald Trump Followers", columnsVector
 bidenMatrix, bidenArray = followerMatrix("Joe Biden Followers", columnsVector, parent)
 bothMatrix, bothArray = followerMatrix("Both Followers", columnsVector, parent)
 
-
+# Create the total matrix by concatenating the Trump and Biden matrices
+# Save to computer as npy file
 matrix_list = np.concatenate((trumpMatrix, bidenMatrix), axis = 0)
 matrix = np.array(matrix_list)
 np.save('matrix.npy', matrix)
