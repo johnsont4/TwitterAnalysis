@@ -1,5 +1,5 @@
 # TwitterAnalysis
-![alternativetext](/Users/teaganjohnson/dektop/1_JN3fPqF0y_N-jb7G3PAiqA.png)
+![alternativetext](/Users/teaganjohnson/dektop/1_JN3fPqF0y_N-jb7G3PAiqA.png/)
 
 In this project, we take a deep dive into Trump and Biden’s Twitter followers. By utilizing data visualization techniques, entropic analysis, and machine learning modeling, we investigate the polarization between Trump and Biden followers, predict who a Twitter user is most likely to follow based on the accounts they follow, and analyze other significant trends.
 
