@@ -14,3 +14,4 @@ Check out our website!: https://johnsont4.medium.com/twitter-analysis-trump-vs-b
   6. *BONUS: Run youTry.py to see how likely a specific user is to follow Trump or Biden!
   
 # Thank you! #
+If you have any questions or concerns, please reach out! johnsont4@carleton.edu
